@@ -20,7 +20,7 @@ export function ProductDetailPage() {
   if (isLoading) {
     return (
       <div className="container-wide py-12 md:py-20 grid grid-cols-1 md:grid-cols-2 gap-12">
-        <Skeleton className="aspect-[3/4] w-full" />
+        <Skeleton className="aspect-3/4 w-full" />
         <div className="space-y-6 pt-10">
           <Skeleton className="h-10 w-2/3" />
           <Skeleton className="h-6 w-1/4" />
@@ -60,7 +60,7 @@ export function ProductDetailPage() {
         {/* Images */}
         <div className="grid gap-4">
           {product.images.map((img, idx) => (
-            <div key={idx} className="bg-stone-100 aspect-[3/4] overflow-hidden">
+            <div key={idx} className="bg-stone-100 aspect-3/4 overflow-hidden">
               <img src={img.path} alt={`${product.name} - view ${idx + 1}`} className="w-full h-full object-cover" />
             </div>
           ))}

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Heart } from 'lucide-react';
+import { useState } from 'react';
 import { cn } from '@/utils/cn';
 import type { Product } from '@/types';
 import { useAuthStore } from '@/store/auth.store';
@@ -17,6 +18,16 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const removeFromWishlist = useRemoveFromWishlist();
 
   const isWishlisted = wishlist?.products?.some((p) => p._id === product._id) ?? false;
+
+  const [isZooming, setIsZooming] = useState(false);
+  const [origin, setOrigin] = useState('50% 50%');
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setOrigin(`${x}% ${y}%`);
+  };
 
   const categoryName = typeof product.category === 'object' ? product.category.name : '';
 
@@ -48,14 +59,23 @@ export function ProductCard({ product, className }: ProductCardProps) {
       to={`/product/${product._id}`}
       className={cn('group block', className)}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-stone-100 mb-3">
+      <div
+        className="relative aspect-3/4 overflow-hidden bg-stone-100 mb-3"
+        onMouseEnter={() => setIsZooming(true)}
+        onMouseLeave={() => setIsZooming(false)}
+        onMouseMove={handleMouseMove}
+      >
         {mainImage && (
           <img
             src={mainImage}
             alt={product.name}
             loading="lazy"
+            style={{
+              transformOrigin: origin,
+              transform: isZooming && !hoverImage ? 'scale(1.6)' : 'scale(1)',
+            }}
             className={cn(
-              'absolute inset-0 w-full h-full object-cover transition-opacity duration-500',
+              'absolute inset-0 w-full h-full object-cover transition-[opacity,transform] duration-500 ease-out',
               hoverImage ? 'group-hover:opacity-0' : ''
             )}
           />
@@ -65,7 +85,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
             src={hoverImage}
             alt={`${product.name} alternate view`}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            style={{
+              transformOrigin: origin,
+              transform: isZooming ? 'scale(1.6)' : 'scale(1)',
+            }}
+            className="absolute inset-0 w-full h-full object-cover opacity-0 group-hover:opacity-100 transition-[opacity,transform] duration-500 ease-out"
           />
         )}
 
